@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ninja DNS - Проверка подключения</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gray: {
+                            850: '#1f2937',
+                            950: '#0f172a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        [x-cloak] { display: none !important; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .pulse-ring {
+            animation: pulseRing 2s infinite;
+        }
+        @keyframes pulseRing {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen" x-data="dnsChecker()" x-init="init()">
+    <!-- Header -->
+    <header class="bg-gray-900 border-b border-gray-800">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <i data-lucide="shield-check" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <h1 class="text-xl font-semibold text-white">Ninja DNS</h1>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <a href="/admin" class="text-gray-400 hover:text-white transition-colors">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Hero Section -->
+        <div class="text-center mb-12">
+            <div class="mb-6">
+                <div class="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center mx-auto pulse-ring">
+                    <i data-lucide="globe" class="w-12 h-12 text-white"></i>
+                </div>
+            </div>
+            <h1 class="text-4xl font-bold text-white mb-4">Ninja DNS</h1>
+            <p class="text-xl text-gray-300 mb-8">Обход геоблокировки с защищенным DNS</p>
+        </div>
+
+        <!-- DNS Check Section -->
+        <div class="bg-gray-900 rounded-lg p-8 mb-8 border border-gray-800 fade-in">
+            <div class="text-center">
+                <h2 class="text-2xl font-semibold text-white mb-6">Проверка подключения</h2>
+                
+                <div x-show="isChecking" class="mb-6">
+                    <div class="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p class="text-gray-300">Проверяем ваше подключение...</p>
+                </div>
+
+                <div x-show="!isChecking && checkResult" class="mb-6">
+                    <div x-show="checkResult.using_baltic_dns" class="text-center">
+                        <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="check" class="w-8 h-8 text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-green-400 mb-2">✅ Подключен!</h3>
+                        <p class="text-gray-300 mb-4">Вы успешно используете Ninja DNS</p>
+                        <div class="bg-gray-800 rounded-lg p-4 text-left">
+                            <p class="text-sm text-gray-400 mb-2">Информация о подключении:</p>
+                            <p class="text-white">Сервер: <span class="font-mono text-blue-400" x-text="checkResult.server_ip"></span></p>
+                            <p class="text-white" x-show="checkResult.test_domain">Тест домен: <span class="font-mono text-green-400" x-text="checkResult.test_domain"></span></p>
+                            <div x-show="checkResult.details" class="mt-2">
+                                <p class="text-sm text-gray-400 mb-1">Результат проверки:</p>
+                                <p class="text-white">✅ DNS тест пройден успешно</p>
+                                <p class="text-xs text-gray-300 mt-1" x-text="checkResult.details?.explanation"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div x-show="!checkResult.using_baltic_dns" class="text-center">
+                        <div class="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="x" class="w-8 h-8 text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-red-400 mb-2">❌ Не подключен</h3>
+                        <p class="text-gray-300 mb-4">Вы НЕ используете Ninja DNS</p>
+                        <div class="bg-gray-800 rounded-lg p-4 text-left">
+                            <p class="text-sm text-gray-400 mb-2">Детали проверки:</p>
+                            <p class="text-white" x-show="checkResult.test_domain">Тест домен: <span class="font-mono text-red-400" x-text="checkResult.test_domain"></span></p>
+                            <div x-show="checkResult.details" class="mt-2">
+                                <p class="text-sm text-gray-400 mb-1">Результат:</p>
+                                <p class="text-white">❌ DNS тест НЕ пройден</p>
+                                <p class="text-xs text-gray-300 mt-1" x-text="checkResult.details?.explanation"></p>
+                                <div class="mt-3 p-3 bg-blue-900 rounded text-blue-200 text-sm">
+                                    <p class="font-semibold mb-1">💡 Как настроить Ninja DNS:</p>
+                                    <p class="text-xs">1. Откройте настройки сети на устройстве</p>
+                                    <p class="text-xs">2. Найдите настройки DNS</p>
+                                    <p class="text-xs">3. Укажите DNS сервер: <span class="font-mono">185.237.95.211</span></p>
+                                    <p class="text-xs">4. Сохраните настройки и перезагрузите страницу</p>
+                                </div>
+                            </div>
+                            <p class="text-red-400 text-sm mt-2" x-show="checkResult.error" x-text="checkResult.error"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <button @click="checkDNS()" 
+                        :disabled="isChecking"
+                        class="px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-lg transition-colors duration-200 font-semibold">
+                    <span x-text="isChecking ? 'Проверяем...' : 'Проверить подключение'"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Setup Instructions -->
+        <div class="bg-gray-900 rounded-lg p-8 border border-gray-800 fade-in">
+            <h2 class="text-2xl font-semibold text-white mb-6 flex items-center">
+                <i data-lucide="book-open" class="w-6 h-6 mr-3"></i>
+                Настройка DNS
+            </h2>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Manual Setup -->
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
+                        <i data-lucide="settings-2" class="w-5 h-5 mr-2"></i>
+                        Ручная настройка
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-sm text-gray-400 mb-1">DNS сервер:</p>
+                            <div class="bg-gray-700 rounded px-3 py-2 font-mono text-blue-400 text-sm">
+                                185.237.95.211
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-400 mb-1">DoT (DNS over TLS):</p>
+                            <div class="bg-gray-700 rounded px-3 py-2 font-mono text-blue-400 text-sm">
+                                185.237.95.211:853
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-400 mb-1">DoH (DNS over HTTPS):</p>
+                            <div class="bg-gray-700 rounded px-3 py-2 font-mono text-blue-400 text-sm">
+                                https://dns.uzicus.ru/dns-query
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Config -->
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
+                        <i data-lucide="smartphone" class="w-5 h-5 mr-2"></i>
+                        Профили конфигурации
+                    </h3>
+                    <div class="space-y-3">
+                        <a href="/download/uzicus" 
+                           class="block w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-center">
+                           🍎 Универсальный профиль Apple
+                        </a>
+                        <p class="text-xs text-gray-400 mt-2">
+                            Автоматическая настройка DNS для всех Apple устройств (iPhone, iPad, Mac, Apple TV)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="mt-12 grid md:grid-cols-3 gap-6">
+            <div class="bg-gray-900 rounded-lg p-6 border border-gray-800 text-center">
+                <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="shield" class="w-6 h-6 text-white"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-white mb-2">Защищенный DNS</h3>
+                <p class="text-gray-400 text-sm">DoH и DoT шифрование для защиты ваших запросов</p>
+            </div>
+
+            <div class="bg-gray-900 rounded-lg p-6 border border-gray-800 text-center">
+                <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="zap" class="w-6 h-6 text-white"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-white mb-2">Быстрый доступ</h3>
+                <p class="text-gray-400 text-sm">Обход геоблокировки без потери скорости</p>
+            </div>
+
+            <div class="bg-gray-900 rounded-lg p-6 border border-gray-800 text-center">
+                <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="globe-2" class="w-6 h-6 text-white"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-white mb-2">Глобальный доступ</h3>
+                <p class="text-gray-400 text-sm">Доступ к заблокированным сервисам по всему миру</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 border-t border-gray-800 mt-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center text-gray-400">
+                <p class="text-sm">Ninja DNS - Свободный интернет для всех</p>
+                <p class="text-xs mt-2">Сервер: 185.237.95.211</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function dnsChecker() {
+            return {
+                isChecking: false,
+                checkResult: null,
+
+                init() {
+                    this.checkDNS();
+                    lucide.createIcons();
+                },
+
+                async checkDNS() {
+                    this.isChecking = true;
+                    this.checkResult = null;
+                    
+                    const testDomain = 'test.dns.uzicus.ru';
+                    
+                    try {
+                        console.log('Проверяем резолвинг тестового домена:', testDomain);
+                        
+                        let dnsTestPassed = false;
+                        let errorMessage = '';
+                        
+                        // Создаем WebSocket соединение для проверки DNS
+                        const checkPromise = new Promise((resolve, reject) => {
+                            // Таймаут для проверки
+                            const timeout = setTimeout(() => {
+                                reject(new Error('Timeout: проверка заняла слишком много времени'));
+                            }, 5000);
+                            
+                            try {
+                                // Создаем WebSocket соединение по HTTP (обходим Mixed Content)
+                                const wsUrl = `ws://${testDomain}/dns-check`;
+                                console.log('🔍 Подключаемся к WebSocket:', wsUrl);
+                                const ws = new WebSocket(wsUrl);
+                                
+                                ws.onopen = () => {
+                                    console.log('✅ WebSocket соединение установлено - DNS работает!');
+                                };
+                                
+                                ws.onmessage = (event) => {
+                                    clearTimeout(timeout);
+                                    try {
+                                        const data = JSON.parse(event.data);
+                                        console.log('✅ Получены данные от WebSocket:', data);
+                                        ws.close();
+                                        resolve(true);
+                                    } catch (e) {
+                                        ws.close();
+                                        resolve(true); // Если получили сообщение, DNS работает
+                                    }
+                                };
+                                
+                                ws.onerror = (error) => {
+                                    clearTimeout(timeout);
+                                    console.log('❌ Ошибка WebSocket соединения - DNS не работает');
+                                    ws.close();
+                                    resolve(false);
+                                };
+                                
+                                ws.onclose = (event) => {
+                                    if (event.code === 1003) {
+                                        // Forbidden domain - это значит соединение дошло до сервера
+                                        clearTimeout(timeout);
+                                        resolve(true);
+                                    }
+                                };
+                                
+                            } catch (wsError) {
+                                clearTimeout(timeout);
+                                console.log('❌ Ошибка создания WebSocket:', wsError);
+                                resolve(false);
+                            }
+                        });
+                        
+                        try {
+                            dnsTestPassed = await checkPromise;
+                        } catch (timeoutError) {
+                            errorMessage = timeoutError.message;
+                            dnsTestPassed = false;
+                        }
+                        
+                        // Формируем результат
+                        this.checkResult = {
+                            success: true,
+                            using_baltic_dns: dnsTestPassed,
+                            server_ip: '185.237.95.211',
+                            test_domain: testDomain,
+                            message: dnsTestPassed 
+                                ? '✅ Вы используете Ninja DNS!' 
+                                : '❌ Вы НЕ используете Ninja DNS',
+                            details: {
+                                test_completed: dnsTestPassed,
+                                explanation: dnsTestPassed 
+                                    ? `Тестовый домен ${testDomain} успешно резолвится через Ninja DNS (WebSocket тест)`
+                                    : `Тестовый домен ${testDomain} НЕ резолвится через Ninja DNS (WebSocket тест)${errorMessage ? ': ' + errorMessage : ''}`
+                            }
+                        };
+                        
+                        console.log('Результат проверки DNS:', this.checkResult);
+                        
+                    } catch (error) {
+                        console.error('DNS check failed:', error);
+                        this.checkResult = {
+                            success: false,
+                            using_baltic_dns: false,
+                            error: 'Ошибка проверки подключения: ' + error.message
+                        };
+                    } finally {
+                        this.isChecking = false;
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест DNS проверки</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .result {
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-size: 18px;
+        }
+        .success {
+            background: #1e4620;
+            border: 1px solid #4ade80;
+        }
+        .error {
+            background: #450a0a;
+            border: 1px solid #ef4444;
+        }
+        .loading {
+            background: #1e3a8a;
+            border: 1px solid #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <h1>Тест DNS проверки через картинку</h1>
+    
+    <div id="result" class="result loading">
+        Проверяем DNS...
+    </div>
+    
+    <button onclick="checkDNS()">Проверить еще раз</button>
+    
+    <h3>Детали:</h3>
+    <pre id="details"></pre>
+
+    <script>
+        function checkDNS() {
+            const resultDiv = document.getElementById('result');
+            const detailsDiv = document.getElementById('details');
+            
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = 'Проверяем DNS...';
+            detailsDiv.textContent = '';
+            
+            const testDomain = 'test.dns.uzicus.ru';
+            const img = new Image();
+            
+            const timeout = setTimeout(() => {
+                img.onload = null;
+                img.onerror = null;
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ Таймаут проверки - DNS вероятно не настроен';
+                detailsDiv.textContent = `Проверка заняла больше 5 секунд\nURL: ${img.src}`;
+            }, 5000);
+            
+            img.onload = () => {
+                clearTimeout(timeout);
+                resultDiv.className = 'result success';
+                resultDiv.textContent = '✅ DNS работает! Картинка загружена успешно';
+                detailsDiv.textContent = `Картинка загружена с: ${img.src}\nDNS настроен правильно на 185.237.95.211`;
+            };
+            
+            img.onerror = () => {
+                clearTimeout(timeout);
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ DNS не работает - картинка не загрузилась';
+                detailsDiv.textContent = `Не удалось загрузить: ${img.src}\nВозможно DNS не настроен или домен не резолвится в 185.237.95.211`;
+            };
+            
+            // Загружаем картинку по HTTP
+            img.src = `http://${testDomain}/pixel.png?t=${Date.now()}`;
+            detailsDiv.textContent = `Загружаем картинку: ${img.src}`;
+        }
+        
+        // Запускаем проверку при загрузке страницы
+        checkDNS();
+    </script>
+</body>
+</html>

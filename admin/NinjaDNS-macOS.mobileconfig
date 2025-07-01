@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>PayloadContent</key>
+    <array>
+        <!-- Network DNS Settings -->
+        <dict>
+            <key>PayloadDisplayName</key>
+            <string>Ninja DNS Servers</string>
+            <key>PayloadDescription</key>
+            <string>Настройка DNS серверов Ninja DNS для обхода геоблокировки</string>
+            <key>PayloadIdentifier</key>
+            <string>ru.uzicus.baltic-dns.network</string>
+            <key>PayloadType</key>
+            <string>com.apple.wifi.managed</string>
+            <key>PayloadUUID</key>
+            <string>E1F2G3H4-I5J6-7K8L-9M0N-O1P2Q3R4S5T6</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+            <key>SSID_STR</key>
+            <string>ANY</string>
+            <key>Interface</key>
+            <string>Any</string>
+            <key>ProxyType</key>
+            <string>None</string>
+            <key>SetupModes</key>
+            <array>
+                <string>System</string>
+            </array>
+            <key>DNSSettings</key>
+            <dict>
+                <key>DNSProtocol</key>
+                <string>UDP</string>
+                <key>ServerAddresses</key>
+                <array>
+                    <string>185.237.95.211</string>
+                    <string>1.1.1.1</string>
+                    <string>8.8.8.8</string>
+                </array>
+                <key>SearchDomains</key>
+                <array>
+                    <string>local</string>
+                </array>
+                <key>SupplementalMatchDomains</key>
+                <array>
+                    <string></string>
+                </array>
+            </dict>
+        </dict>
+    </array>
+    
+    <!-- Main Profile Information -->
+    <key>PayloadDisplayName</key>
+    <string>Ninja DNS - macOS Compatible</string>
+    <key>PayloadDescription</key>
+    <string>Профиль DNS настроек для macOS с Ninja DNS сервером. Совместим со всеми версиями macOS.
+
+DNS серверы:
+• Основной: 185.237.95.211 (Ninja DNS)
+• Резервный 1: 1.1.1.1 (Cloudflare)
+• Резервный 2: 8.8.8.8 (Google)
+
+Особенности:
+✅ Обход геоблокировок
+✅ Улучшенная скорость доступа к заблокированным сайтам
+✅ Совместимость с macOS 10.13+
+✅ Автоматический fallback на резервные DNS
+
+Для удаления профиля:
+Системные настройки > Профили > Ninja DNS > Удалить</string>
+    <key>PayloadIdentifier</key>
+    <string>ru.uzicus.baltic-dns.macos</string>
+    <key>PayloadRemovalDisallowed</key>
+    <false/>
+    <key>PayloadType</key>
+    <string>Configuration</string>
+    <key>PayloadUUID</key>
+    <string>F2G3H4I5-J6K7-8L9M-0N1O-P2Q3R4S5T6U7</string>
+    <key>PayloadVersion</key>
+    <integer>1</integer>
+    
+    <!-- Organization Information -->
+    <key>PayloadOrganization</key>
+    <string>Ninja DNS</string>
+    
+    <!-- Scope - User level installation -->
+    <key>PayloadScope</key>
+    <string>User</string>
+    
+    <!-- macOS only -->
+    <key>TargetDeviceType</key>
+    <integer>2</integer>
+    
+    <!-- Auto removal after specified period (optional) -->
+    <key>RemovalDate</key>
+    <date>2025-12-31T23:59:59Z</date>
+    
+    <!-- Additional metadata -->
+    <key>ConsentText</key>
+    <dict>
+        <key>default</key>
+        <string>Этот профиль настроит DNS серверы на вашем Mac для использования Ninja DNS.
+
+Что будет изменено:
+• DNS сервер 1: 185.237.95.211 (Ninja DNS)
+• DNS сервер 2: 1.1.1.1 (Cloudflare, резервный)
+• DNS сервер 3: 8.8.8.8 (Google, резервный)
+
+Преимущества:
+✅ Доступ к заблокированным сайтам
+✅ Улучшенная скорость подключения
+✅ Автоматическое переключение на резервные DNS
+✅ Совместимость со всеми приложениями
+
+Профиль можно удалить в любое время через Системные настройки.
+
+Продолжить установку?</string>
+    </dict>
+</dict>
+</plist>

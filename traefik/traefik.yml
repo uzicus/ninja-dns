@@ -1,0 +1,38 @@
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+api:
+  dashboard: true
+  insecure: true
+
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":8443"
+  dot:
+    address: ":853"
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+    watch: true
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: admin@uzicus.ru
+      storage: /letsencrypt/acme.json
+      httpChallenge:
+        entryPoint: web
+      caServer: https://acme-v02.api.letsencrypt.org/directory
+
+log:
+  level: INFO
+
+accessLog: {}

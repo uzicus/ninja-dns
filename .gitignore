@@ -1,0 +1,62 @@
+# Environment files
+.env
+.env.local
+.env.production
+
+# Docker volumes and data
+volumes/
+data/
+
+# Traefik certificates and auth
+traefik/letsencrypt/
+traefik/auth/.htpasswd
+
+# Generated configs
+smartdns/smartdns.conf
+sniproxy/nginx.conf
+traefik/dynamic/dynamic.yml
+
+# Domain data (contains actual domains)
+domains.json
+
+# Logs
+*.log
+logs/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# SSL certificates (except examples)
+*.pem
+*.key
+*.crt
+*.cert
+
+# Docker override files
+docker-compose.override.yml

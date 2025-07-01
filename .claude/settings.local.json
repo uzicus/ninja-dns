@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker-compose:*)",
+      "Bash(docker compose:*)",
+      "Bash(mkdir:*)",
+      "Bash(openssl req:*)",
+      "Bash(nslookup:*)",
+      "Bash(curl:*)",
+      "Bash(dig:*)",
+      "Bash(kdig:*)",
+      "Bash(chmod:*)",
+      "Bash(openssl:*)",
+      "Bash(ss:*)",
+      "Bash(cp:*)",
+      "Bash(python3:*)",
+      "Bash(./run-tests.sh)",
+      "Bash(apt:*)",
+      "Bash(apt install:*)",
+      "Bash(pip3 install:*)",
+      "Bash(grep:*)",
+      "Bash(docker exec:*)",
+      "Bash(rm:*)",
+      "Bash(ls:*)",
+      "Bash(xmllint:*)",
+      "Bash(docker cp:*)",
+      "Bash(mv:*)",
+      "Bash(docker rmi:*)"
+    ],
+    "deny": []
+  }
+}

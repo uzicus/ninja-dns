@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:v3.2
+    container_name: traefik
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "8443:8443"
+      - "853:853"
+      - "127.0.0.1:8080:8080"
+    command:
+      - --api.dashboard=true
+      - --api.insecure=false
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --providers.file.watch=true
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.dot.address=:853
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge=true
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
+      - --certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL:-admin@uzicus.ru}
+      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.letsencrypt.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik:/etc/traefik:ro
+      - letsencrypt:/letsencrypt
+    networks:
+      - proxy
+
+  smartdns:
+    image: pymumu/smartdns:latest
+    container_name: smartdns
+    restart: unless-stopped
+    ports:
+      - "53:53/udp"
+      - "53:53/tcp"
+      - "6053:6053/tcp"
+    volumes:
+      - ./smartdns/smartdns.conf:/etc/smartdns/smartdns.conf:ro
+      - ./smartdns/certs:/etc/smartdns/certs:ro
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.smartdns-dot.entrypoints=dot"
+      - "traefik.tcp.routers.smartdns-dot.rule=HostSNI(`${HOST_DOMAIN:-dns.uzicus.ru}`)"
+      - "traefik.tcp.routers.smartdns-dot.tls=true"
+      - "traefik.tcp.routers.smartdns-dot.tls.certresolver=letsencrypt"
+      - "traefik.tcp.routers.smartdns-dot.service=smartdns-dot"
+      - "traefik.tcp.services.smartdns-dot.loadBalancer.server.port=53"
+
+  sniproxy:
+    image: nginx:alpine
+    container_name: sniproxy
+    restart: unless-stopped
+    ports:
+      - "443:443"
+    volumes:
+      - ./sniproxy/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - proxy
+
+  doh-proxy:
+    image: satishweb/doh-server:latest
+    container_name: doh-proxy
+    restart: unless-stopped
+    environment:
+      - UPSTREAM_DNS_SERVER=udp:smartdns:53
+      - DOH_HTTP_PREFIX=/dns-query
+      - DOH_SERVER_LISTEN=:8053
+      - DOH_SERVER_TIMEOUT=10
+      - DOH_SERVER_TRIES=3
+      - DOH_SERVER_VERBOSE=false
+    networks:
+      - proxy
+
+  admin:
+    build: ./admin
+    container_name: admin
+    restart: unless-stopped
+    environment:
+      - HOST_DOMAIN=${HOST_DOMAIN:-dns.uzicus.ru}
+      - SERVER_IP=${SERVER_IP:-185.237.95.211}
+      - TEST_SUBDOMAIN=${TEST_SUBDOMAIN:-test}
+      - DEBUG=${DEBUG:-false}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./domains.json:/data/domains.json
+      - ./smartdns:/data/smartdns
+      - ./sniproxy:/data/sniproxy
+    networks:
+      - proxy
+    depends_on:
+      - smartdns
+      - sniproxy
+
+volumes:
+  letsencrypt:
+
+networks:
+  proxy:
+    external: false

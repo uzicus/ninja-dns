@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>PayloadContent</key>
+    <array>
+        <!-- DNS-over-HTTPS Configuration -->
+        <dict>
+            <key>PayloadDisplayName</key>
+            <string>Baltic DNS - Secure DNS</string>
+            <key>PayloadDescription</key>
+            <string>Настройка защищенного DNS сервера Baltic DNS с поддержкой DoH</string>
+            <key>PayloadIdentifier</key>
+            <string>ru.uzicus.baltic-dns.doh</string>
+            <key>PayloadType</key>
+            <string>com.apple.dnsSettings.managed</string>
+            <key>PayloadUUID</key>
+            <string>A1B2C3D4-E5F6-7G8H-9I0J-K1L2M3N4O5P6</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+            <key>DNSSettings</key>
+            <dict>
+                <key>DNSProtocol</key>
+                <string>HTTPS</string>
+                <key>ServerURL</key>
+                <string>https://dns.uzicus.ru/dns-query</string>
+                <key>SupplementalMatchDomains</key>
+                <array>
+                    <string></string>
+                </array>
+            </dict>
+        </dict>
+    </array>
+    
+    <!-- Main Profile Information -->
+    <key>PayloadDisplayName</key>
+    <string>Baltic DNS - Secure DNS Configuration</string>
+    <key>PayloadDescription</key>
+    <string>Профиль для настройки Baltic DNS сервера с защищенным DNS-over-HTTPS протоколом. Обеспечивает обход геоблокировки и защищенную передачу DNS запросов.
+
+Основные настройки:
+• DNS-over-HTTPS: https://dns.uzicus.ru/dns-query
+• Шифрование: ✅ HTTPS с TLS 1.2+
+• Совместимость: macOS 11+, iOS 14+, iPadOS 14+
+
+Для удаления профиля перейдите в:
+macOS: Системные настройки > Профили
+iOS/iPadOS: Настройки > Основные > VPN и управление устройством > Профили</string>
+    <key>PayloadIdentifier</key>
+    <string>ru.uzicus.baltic-dns</string>
+    <key>PayloadRemovalDisallowed</key>
+    <false/>
+    <key>PayloadType</key>
+    <string>Configuration</string>
+    <key>PayloadUUID</key>
+    <string>D4E5F6G7-H8I9-0J1K-2L3M-N4O5P6Q7R8S9</string>
+    <key>PayloadVersion</key>
+    <integer>1</integer>
+    
+    <!-- Organization Information -->
+    <key>PayloadOrganization</key>
+    <string>Baltic DNS</string>
+    
+    <!-- Scope - User level installation -->
+    <key>PayloadScope</key>
+    <string>User</string>
+    
+    <!-- Compatible platforms - 0 = All, 1 = iOS only, 2 = macOS only -->
+    <key>TargetDeviceType</key>
+    <integer>0</integer>
+    
+    <!-- Auto removal after specified period (optional) -->
+    <key>RemovalDate</key>
+    <date>2025-12-31T23:59:59Z</date>
+    
+    <!-- Additional metadata -->
+    <key>ConsentText</key>
+    <dict>
+        <key>default</key>
+        <string>Этот профиль настроит ваше устройство на использование Baltic DNS сервера для улучшенной приватности и обхода геоблокировки.
+
+DNS запросы будут направляться через:
+• DNS-over-HTTPS (DoH): https://dns.uzicus.ru/dns-query
+• Шифрование TLS для защиты от прослушивания
+• Автоматический fallback на системные DNS при недоступности
+
+Преимущества:
+✅ Защищенные DNS запросы
+✅ Обход геоблокировок
+✅ Улучшенная приватность
+✅ Совместимость со всеми приложениями
+
+Профиль может быть удален в любое время через системные настройки.
+
+Продолжить установку?</string>
+        <key>ru</key>
+        <string>Этот профиль настроит ваше устройство на использование Baltic DNS сервера для улучшенной приватности и обхода геоблокировки.
+
+DNS запросы будут направляться через:
+• DNS-over-HTTPS (DoH): https://dns.uzicus.ru/dns-query
+• Шифрование TLS для защиты от прослушивания
+• Автоматический fallback на системные DNS при недоступности
+
+Преимущества:
+✅ Защищенные DNS запросы
+✅ Обход геоблокировок
+✅ Улучшенная приватность
+✅ Совместимость со всеми приложениями
+
+Профиль может быть удален в любое время через системные настройки.
+
+Продолжить установку?</string>
+    </dict>
+</dict>
+</plist>

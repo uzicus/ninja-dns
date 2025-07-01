@@ -1,0 +1,189 @@
+http:
+  routers:
+    smartdns-doh:
+      rule: "Host(`{{HOST_DOMAIN}}`) && PathPrefix(`/dns-query`)"
+      service: smartdns-doh
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: {{HOST_DOMAIN}}
+          - sans:
+            - {{TEST_DOMAIN}}
+      priority: 100
+    
+    admin-websocket:
+      rule: "Host(`{{HOST_DOMAIN}}`) && PathPrefix(`/ws`)"
+      service: admin-panel
+      entryPoints:
+        - websecure
+      middlewares:
+        - admin-auth
+        - rate-limit
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: {{HOST_DOMAIN}}
+          - sans:
+            - {{TEST_DOMAIN}}
+      priority: 90
+    
+    
+    admin-api:
+      rule: "Host(`{{HOST_DOMAIN}}`) && PathPrefix(`/api`)"
+      service: admin-panel
+      entryPoints:
+        - websecure
+      middlewares:
+        - admin-auth
+        - rate-limit
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: {{HOST_DOMAIN}}
+          - sans:
+            - {{TEST_DOMAIN}}
+      priority: 80
+    
+    admin-download:
+      rule: "Host(`{{HOST_DOMAIN}}`) && PathPrefix(`/download`)"
+      service: admin-panel
+      entryPoints:
+        - websecure
+      middlewares:
+        - rate-limit
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: {{HOST_DOMAIN}}
+          - sans:
+            - {{TEST_DOMAIN}}
+      priority: 75
+    
+    admin-path:
+      rule: "Host(`{{HOST_DOMAIN}}`) && PathPrefix(`/admin`)"
+      service: admin-panel
+      entryPoints:
+        - websecure
+      middlewares:
+        - admin-auth
+        - rate-limit
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: {{HOST_DOMAIN}}
+          - sans:
+            - {{TEST_DOMAIN}}
+      priority: 70
+    
+    public-static:
+      rule: "Host(`{{HOST_DOMAIN}}`) && PathPrefix(`/static`)"
+      service: admin-panel
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: {{HOST_DOMAIN}}
+          - sans:
+            - {{TEST_DOMAIN}}
+      priority: 84
+    
+    public-root:
+      rule: "Host(`{{HOST_DOMAIN}}`) && Path(`/`)"
+      service: admin-panel
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: {{HOST_DOMAIN}}
+          - sans:
+            - {{TEST_DOMAIN}}
+      priority: 60
+    
+    public-fallback:
+      rule: "Host(`{{HOST_DOMAIN}}`)"
+      service: admin-panel
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: {{HOST_DOMAIN}}
+          - sans:
+            - {{TEST_DOMAIN}}
+      priority: 10
+    
+    
+    test-domain-http:
+      rule: "Host(`{{TEST_DOMAIN}}`)"
+      service: admin-panel
+      entryPoints:
+        - web
+      priority: 100
+    
+    test-domain-https:
+      rule: "Host(`{{TEST_DOMAIN}}`)"
+      service: admin-panel
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
+      priority: 100
+
+    smartdns-doh-http:
+      rule: "Host(`{{HOST_DOMAIN}}`)"
+      service: noop
+      entryPoints:
+        - web
+      middlewares:
+        - https-redirect
+
+  middlewares:
+    https-redirect:
+      redirectScheme:
+        scheme: https
+        permanent: true
+    
+    admin-auth:
+      basicAuth:
+        usersFile: /etc/traefik/auth/.htpasswd
+        realm: "Baltic DNS Admin"
+    
+    rate-limit:
+      rateLimit:
+        average: 100
+        period: "1m"
+        burst: 200
+
+  services:
+    admin-panel:
+      loadBalancer:
+        servers:
+          - url: "http://admin:8000"
+    noop:
+      loadBalancer:
+        servers:
+          - url: "http://localhost"
+    smartdns-doh:
+      loadBalancer:
+        servers:
+          - url: "http://doh-proxy:8053"
+
+
+tls:
+  options:
+    default:
+      minVersion: VersionTLS12
+      maxVersion: VersionTLS13
+      alpnProtocols:
+        - http/1.1
+        - h2
+        - dot
+    dot:
+      minVersion: VersionTLS12
+      maxVersion: VersionTLS13
+      alpnProtocols:
+        - dot

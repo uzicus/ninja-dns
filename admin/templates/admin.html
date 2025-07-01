@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ninja DNS Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gray: {
+                            850: '#1f2937',
+                            950: '#0f172a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        [x-cloak] { display: none !important; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .toast { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen" x-data="dnsManager()" x-init="init()">
+    <!-- Header -->
+    <header class="bg-gray-900 border-b border-gray-800 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <i data-lucide="globe" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <h1 class="text-xl font-semibold text-white">Ninja DNS Manager</h1>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <!-- Service Status -->
+                    <div class="flex items-center space-x-3">
+                        <template x-for="(status, service) in serviceStatus" :key="service">
+                            <div class="flex items-center space-x-1">
+                                <div :class="status === 'running' ? 'bg-green-500' : 'bg-red-500'" 
+                                     class="w-2 h-2 rounded-full"></div>
+                                <span class="text-sm text-gray-300 capitalize" x-text="service"></span>
+                            </div>
+                        </template>
+                    </div>
+                    
+                    <!-- Connection Status -->
+                    <div class="flex items-center space-x-1">
+                        <div :class="isConnected ? 'bg-green-500' : 'bg-red-500'" 
+                             class="w-2 h-2 rounded-full"></div>
+                        <span class="text-sm text-gray-400" x-text="isConnected ? 'Connected' : 'Disconnected'"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Add Domain Section -->
+        <div class="bg-gray-900 rounded-lg p-6 mb-8 border border-gray-800">
+            <h2 class="text-lg font-semibold text-white mb-4 flex items-center">
+                <i data-lucide="plus" class="w-5 h-5 mr-2"></i>
+                Добавить домен
+            </h2>
+            
+            <form @submit.prevent="addDomain()" class="flex gap-4">
+                <div class="flex-1">
+                    <input type="text" 
+                           x-model="newDomain.name"
+                           @keydown.enter="addDomain()"
+                           placeholder="example.com"
+                           class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           required>
+                </div>
+                
+                <div class="w-32">
+                    <select x-model="newDomain.category" 
+                            class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="streaming">Streaming</option>
+                        <option value="ai">AI</option>
+                        <option value="social">Social</option>
+                        <option value="video">Video</option>
+                        <option value="misc">Misc</option>
+                    </select>
+                </div>
+                
+                <button type="submit" 
+                        :disabled="isLoading || !newDomain.name.trim()"
+                        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-lg transition-colors duration-200 flex items-center space-x-2">
+                    <span x-text="isLoading ? 'Добавление...' : 'Добавить'"></span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Domains List -->
+        <div class="bg-gray-900 rounded-lg border border-gray-800">
+            <div class="p-6 border-b border-gray-800">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold text-white flex items-center">
+                        <i data-lucide="list" class="w-5 h-5 mr-2"></i>
+                        Активные домены
+                        <span class="ml-2 text-sm bg-gray-800 px-2 py-1 rounded-full text-gray-300" 
+                              x-text="`(${filteredDomains.length})`"></span>
+                    </h2>
+                </div>
+                
+                <!-- Search -->
+                <div class="relative">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                    <input type="text" 
+                           x-model="searchQuery"
+                           placeholder="Поиск доменов..."
+                           class="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+            </div>
+            
+            <!-- Domain List -->
+            <div class="divide-y divide-gray-800">
+                <template x-for="domain in filteredDomains" :key="domain.name">
+                    <div class="p-4 hover:bg-gray-850 transition-colors duration-150 flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex-shrink-0">
+                                <div :class="getCategoryColor(domain.category)" 
+                                     class="w-3 h-3 rounded-full"></div>
+                            </div>
+                            
+                            <div>
+                                <div class="text-white font-medium" x-text="domain.name"></div>
+                                <div class="text-sm text-gray-400 capitalize" x-text="domain.category"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <button @click="showDeleteConfirm(domain)" 
+                                    class="p-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition-colors duration-200 border border-red-500/20 hover:border-red-400 flex items-center justify-center"
+                                    title="Удалить домен">
+                                <span class="text-sm">🗑️</span>
+                            </button>
+                        </div>
+                    </div>
+                </template>
+                
+                <!-- Empty State -->
+                <div x-show="filteredDomains.length === 0" class="p-8 text-center text-gray-400">
+                    <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-4 text-gray-600"></i>
+                    <p x-text="searchQuery ? 'Домены не найдены' : 'Нет доменов'"></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Delete Confirmation Modal -->
+    <div x-show="showDeleteModal" 
+         x-cloak
+         @click.away="showDeleteModal = false"
+         class="fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-75"></div>
+            
+            <div class="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-gray-800 rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                <div class="sm:flex sm:items-start">
+                    <div class="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-red-100 rounded-full sm:mx-0 sm:h-10 sm:w-10">
+                        <i data-lucide="trash-2" class="w-6 h-6 text-red-600"></i>
+                    </div>
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <h3 class="text-lg font-medium leading-6 text-white">Удалить домен</h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-300">
+                                Вы уверены, что хотите удалить домен 
+                                <span class="font-medium text-white" x-text="domainToDelete?.name"></span>?
+                                Это действие нельзя отменить.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                    <button @click="deleteDomain()" 
+                            :disabled="isLoading"
+                            class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 disabled:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Удалить
+                    </button>
+                    <button @click="showDeleteModal = false" 
+                            class="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-300 bg-gray-700 border border-gray-600 rounded-md shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:mt-0 sm:w-auto sm:text-sm">
+                        Отмена
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="fixed top-4 right-4 z-50 space-y-2">
+        <template x-for="toast in toasts" :key="toast.id">
+            <div x-show="toast.show" 
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform translate-x-full"
+                 x-transition:enter-end="opacity-100 transform translate-x-0"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 transform translate-x-0"
+                 x-transition:leave-end="opacity-0 transform translate-x-full"
+                 :class="toast.type === 'error' ? 'bg-red-600' : 'bg-green-600'"
+                 class="max-w-sm p-4 text-white rounded-lg shadow-lg">
+                <div class="flex items-center">
+                    <i :data-lucide="toast.type === 'error' ? 'x-circle' : 'check-circle'" class="w-5 h-5 mr-3"></i>
+                    <span x-text="toast.message"></span>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <script>
+        function dnsManager() {
+            return {
+                domains: [],
+                serviceStatus: {},
+                searchQuery: '',
+                isLoading: false,
+                isValidating: false,
+                isConnected: false,
+                newDomain: {
+                    name: '',
+                    category: 'misc'
+                },
+                domainValidation: null,
+                showDeleteModal: false,
+                domainToDelete: null,
+                toasts: [],
+                ws: null,
+
+                init() {
+                    this.loadDomains();
+                    this.loadServiceStatus();
+                    this.initWebSocket();
+                    lucide.createIcons();
+                },
+
+                initWebSocket() {
+                    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                    const host = window.location.host;
+                    this.ws = new WebSocket(`${protocol}//${host}/ws`);
+                    
+                    this.ws.onopen = () => {
+                        this.isConnected = true;
+                    };
+                    
+                    this.ws.onclose = () => {
+                        this.isConnected = false;
+                        // Reconnect after 5 seconds
+                        setTimeout(() => this.initWebSocket(), 5000);
+                    };
+                    
+                    this.ws.onmessage = (event) => {
+                        const data = JSON.parse(event.data);
+                        if (data.type === 'status_update') {
+                            this.serviceStatus = data.status;
+                        } else if (data.type === 'domain_added' || data.type === 'domain_removed') {
+                            this.loadDomains();
+                        }
+                    };
+                },
+
+                async loadDomains() {
+                    try {
+                        const response = await fetch('/api/domains');
+                        const data = await response.json();
+                        this.domains = data.domains;
+                    } catch (error) {
+                        this.showToast('Ошибка загрузки доменов', 'error');
+                    }
+                },
+
+                async loadServiceStatus() {
+                    try {
+                        const response = await fetch('/api/status');
+                        this.serviceStatus = await response.json();
+                    } catch (error) {
+                        console.error('Error loading service status:', error);
+                    }
+                },
+
+                clearValidation() {
+                    this.domainValidation = null;
+                },
+
+                async validateDomain() {
+                    if (!this.newDomain.name.trim()) return;
+                    
+                    this.isValidating = true;
+                    try {
+                        const response = await fetch('/api/domains/validate', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ name: this.newDomain.name })
+                        });
+                        
+                        if (response.ok) {
+                            this.domainValidation = await response.json();
+                        } else {
+                            const error = await response.json();
+                            this.showToast(error.detail || 'Ошибка валидации домена', 'error');
+                        }
+                    } catch (error) {
+                        this.showToast('Ошибка валидации домена', 'error');
+                    } finally {
+                        this.isValidating = false;
+                    }
+                },
+
+                async addDomain() {
+                    if (!this.newDomain.name.trim()) return;
+                    
+                    this.isLoading = true;
+                    try {
+                        const response = await fetch('/api/domains', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(this.newDomain)
+                        });
+                        
+                        if (response.ok) {
+                            const result = await response.json();
+                            this.showToast('Домен добавлен успешно');
+                            this.newDomain.name = '';
+                            this.domainValidation = null;
+                            this.loadDomains();
+                        } else {
+                            const error = await response.json();
+                            this.showToast(error.detail || 'Ошибка добавления домена', 'error');
+                        }
+                    } catch (error) {
+                        this.showToast('Ошибка добавления домена', 'error');
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+
+                showDeleteConfirm(domain) {
+                    this.domainToDelete = domain;
+                    this.showDeleteModal = true;
+                },
+
+                async deleteDomain() {
+                    if (!this.domainToDelete) return;
+                    
+                    this.isLoading = true;
+                    try {
+                        const response = await fetch(`/api/domains/${this.domainToDelete.name}`, {
+                            method: 'DELETE'
+                        });
+                        
+                        if (response.ok) {
+                            this.showToast('Домен удален успешно');
+                            this.loadDomains();
+                        } else {
+                            const error = await response.json();
+                            this.showToast(error.detail || 'Ошибка удаления домена', 'error');
+                        }
+                    } catch (error) {
+                        this.showToast('Ошибка удаления домена', 'error');
+                    } finally {
+                        this.isLoading = false;
+                        this.showDeleteModal = false;
+                        this.domainToDelete = null;
+                    }
+                },
+
+                showToast(message, type = 'success') {
+                    const id = Date.now();
+                    const toast = { id, message, type, show: true };
+                    this.toasts.push(toast);
+                    
+                    setTimeout(() => {
+                        toast.show = false;
+                        setTimeout(() => {
+                            this.toasts = this.toasts.filter(t => t.id !== id);
+                        }, 300);
+                    }, 3000);
+                },
+
+                getCategoryColor(category) {
+                    const colors = {
+                        streaming: 'bg-purple-500',
+                        ai: 'bg-blue-500',
+                        social: 'bg-green-500',
+                        video: 'bg-red-500',
+                        misc: 'bg-gray-500'
+                    };
+                    return colors[category] || colors.misc;
+                },
+
+                get filteredDomains() {
+                    if (!this.searchQuery) return this.domains;
+                    return this.domains.filter(domain => 
+                        domain.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                        domain.category.toLowerCase().includes(this.searchQuery.toLowerCase())
+                    );
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>PayloadContent</key>
+    <array>
+        <dict>
+            <key>PayloadDisplayName</key>
+            <string>Baltic DNS Settings</string>
+            <key>PayloadDescription</key>
+            <string>Настройка DNS серверов Baltic DNS</string>
+            <key>PayloadIdentifier</key>
+            <string>ru.uzicus.baltic-dns.network</string>
+            <key>PayloadType</key>
+            <string>com.apple.network.identification</string>
+            <key>PayloadUUID</key>
+            <string>E1F2G3H4-I5J6-7K8L-9M0N-O1P2Q3R4S5T6</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+            <key>DNSSettings</key>
+            <dict>
+                <key>ServerAddresses</key>
+                <array>
+                    <string>185.237.95.211</string>
+                    <string>1.1.1.1</string>
+                    <string>8.8.8.8</string>
+                </array>
+                <key>SearchDomains</key>
+                <array>
+                    <string>local</string>
+                </array>
+            </dict>
+            <key>Interface</key>
+            <string>Any</string>
+        </dict>
+    </array>
+    <key>PayloadDisplayName</key>
+    <string>Baltic DNS</string>
+    <key>PayloadDescription</key>
+    <string>Настройки DNS для Baltic DNS сервера
+
+DNS серверы:
+• 185.237.95.211 (Baltic DNS)
+• 1.1.1.1 (Cloudflare)
+• 8.8.8.8 (Google)
+
+Для удаления: Системные настройки > Профили</string>
+    <key>PayloadIdentifier</key>
+    <string>ru.uzicus.baltic-dns</string>
+    <key>PayloadType</key>
+    <string>Configuration</string>
+    <key>PayloadUUID</key>
+    <string>F2G3H4I5-J6K7-8L9M-0N1O-P2Q3R4S5T6U7</string>
+    <key>PayloadVersion</key>
+    <integer>1</integer>
+    <key>PayloadOrganization</key>
+    <string>Baltic DNS</string>
+    <key>PayloadScope</key>
+    <string>User</string>
+    <key>PayloadRemovalDisallowed</key>
+    <false/>
+</dict>
+</plist>

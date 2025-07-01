@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ninja DNS - Скачать профиль</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-2">🛡️ Ninja DNS</h1>
+            <p class="text-gray-400">Защищенная DNS конфигурация для Apple устройств</p>
+        </div>
+
+        <!-- Main Download Section -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">📱 Скачать профиль конфигурации</h2>
+            
+            <div class="bg-gray-700 rounded p-6 max-w-md mx-auto text-center">
+                <h3 class="text-xl font-semibold mb-2">🍎 Для всех устройств Apple</h3>
+                <p class="text-sm text-gray-300 mb-4">iPhone • iPad • Mac • Apple TV</p>
+                <p class="text-sm text-gray-400 mb-4">iOS 14+ • iPadOS 14+ • macOS 10.13+ • tvOS 14+</p>
+                <a href="/download/uzicus" 
+                   class="inline-block bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg text-white font-medium transition-colors text-lg mb-2">
+                    Скачать uzicus.mobileconfig
+                </a>
+                <p class="text-xs text-gray-400">Универсальный профиль с поддержкой DoH/DoT</p>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">📋 Инструкция по установке</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-blue-400 mb-2">iPhone/iPad:</h3>
+                    <ol class="list-decimal list-inside space-y-1 text-sm text-gray-300">
+                        <li>Скачайте файл профиля на устройство</li>
+                        <li>Откройте файл (через Safari, Mail или AirDrop)</li>
+                        <li>Нажмите "Установить" в правом верхнем углу</li>
+                        <li>Введите пароль устройства при запросе</li>
+                        <li>Подтвердите установку</li>
+                    </ol>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold text-blue-400 mb-2">Mac:</h3>
+                    <ol class="list-decimal list-inside space-y-1 text-sm text-gray-300">
+                        <li>Скачайте файл профиля</li>
+                        <li>Откройте файл двойным кликом</li>
+                        <li>В Системных настройках перейдите в раздел "Профили"</li>
+                        <li>Нажмите "Установить..." и введите пароль администратора</li>
+                        <li>Подтвердите установку</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">✨ Особенности</h2>
+            
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="text-center">
+                    <div class="text-2xl mb-2">🔒</div>
+                    <h3 class="font-semibold">DNS-over-HTTPS</h3>
+                    <p class="text-sm text-gray-400">Зашифрованные DNS запросы</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="text-2xl mb-2">🛡️</div>
+                    <h3 class="font-semibold">DNS-over-TLS</h3>
+                    <p class="text-sm text-gray-400">Защищенное соединение</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="text-2xl mb-2">🌐</div>
+                    <h3 class="font-semibold">Обход блокировок</h3>
+                    <p class="text-sm text-gray-400">Доступ к заблокированным сайтам</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- DNS Servers Info -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">🖥️ DNS серверы</h2>
+            
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="font-medium">DoH (HTTPS):</span>
+                    <code class="bg-gray-700 px-2 py-1 rounded text-sm">https://dns.uzicus.ru/dns-query</code>
+                </div>
+                
+                <div class="flex justify-between items-center">
+                    <span class="font-medium">DoT (TLS):</span>
+                    <code class="bg-gray-700 px-2 py-1 rounded text-sm">dns.uzicus.ru:853</code>
+                </div>
+                
+                <div class="flex justify-between items-center">
+                    <span class="font-medium">Обычный DNS:</span>
+                    <code class="bg-gray-700 px-2 py-1 rounded text-sm">185.237.95.211</code>
+                </div>
+                
+                <div class="flex justify-between items-center">
+                    <span class="font-medium">Резервные:</span>
+                    <code class="bg-gray-700 px-2 py-1 rounded text-sm">1.1.1.1, 8.8.8.8</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Section -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">🧪 Проверка работы</h2>
+            
+            <div class="space-y-3">
+                <div>
+                    <h3 class="font-semibold mb-2">Проверить DNS в браузере:</h3>
+                    <a href="https://1.1.1.1/help" target="_blank" 
+                       class="inline-block bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white font-medium transition-colors">
+                        Открыть тест DNS
+                    </a>
+                    <p class="text-sm text-gray-400 mt-2">DNS резолвер должен показать: 185.237.95.211</p>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold mb-2">Проверить DoH:</h3>
+                    <a href="https://dns.uzicus.ru/dns-query?name=google.com&type=A" target="_blank"
+                       class="inline-block bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white font-medium transition-colors">
+                        Тест DoH запроса
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-gray-500 text-sm">
+            <p>Ninja DNS v2.2 • <a href="/" class="text-blue-400 hover:text-blue-300">Вернуться к админке</a></p>
+        </div>
+    </div>
+</body>
+</html>
