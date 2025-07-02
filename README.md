@@ -197,13 +197,13 @@ curl -I https://netflix.com \
 
 ### Переменные окружения
 
-| Переменная | Описание | По умолчанию |
-|------------|----------|--------------|
-| `HOST_DOMAIN` | Основной домен | `dns.uzicus.ru` |
-| `SERVER_IP` | IP сервера | `185.237.95.211` |
+| Переменная | Описание | Пример |
+|------------|----------|---------|
+| `HOST_DOMAIN` | Основной домен | `dns.example.com` |
+| `SERVER_IP` | IP сервера | `YOUR_SERVER_IP` |
 | `TEST_SUBDOMAIN` | Тестовый поддомен | `test` |
-| `ACME_EMAIL` | Email для Let's Encrypt | `admin@uzicus.ru` |
-| `ADMIN_PASSWORD` | Пароль админки | `NinjaDNS2024!` |
+| `ACME_EMAIL` | Email для Let's Encrypt | `admin@example.com` |
+| `ADMIN_PASSWORD` | Пароль админки | `YourSecurePassword123!` |
 
 ### Структура файлов
 
