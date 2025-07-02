@@ -9,10 +9,7 @@ import docker
 import os
 import re
 import socket
-import subprocess
-import time
 from typing import List, Dict, Any
-from pathlib import Path
 import logging
 
 # Читаем переменные окружения
@@ -87,7 +84,7 @@ class DomainValidator:
     def can_resolve_domain(domain: str) -> tuple[bool, str]:
         """Проверка что домен резолвится"""
         try:
-            import socket
+            # socket уже импортирован выше
             
             # Попробуем резолвить домен через стандартную библиотеку Python
             try:
@@ -572,7 +569,7 @@ async def download_mobileconfig(request: Request):
     client_ip = get_client_ip(request)
     logger.info(f"Fixed mobileconfig download requested from IP: {client_ip}")
     
-    mobileconfig_path = "/app/BalticDNS-Fixed.mobileconfig"
+    mobileconfig_path = "/app/uzicus.mobileconfig"
     
     # Проверяем существование файла
     if not os.path.exists(mobileconfig_path):
@@ -581,7 +578,7 @@ async def download_mobileconfig(request: Request):
     
     return FileResponse(
         path=mobileconfig_path,
-        filename="BalticDNS-Fixed.mobileconfig",
+        filename="uzicus.mobileconfig",
         media_type="application/x-apple-aspen-config"
     )
 
@@ -591,7 +588,7 @@ async def download_mobileconfig_macos(request: Request):
     client_ip = get_client_ip(request)
     logger.info(f"macOS mobileconfig download requested from IP: {client_ip}")
     
-    mobileconfig_path = "/app/BalticDNS-macOS.mobileconfig"
+    mobileconfig_path = "/app/uzicus.mobileconfig"
     
     # Проверяем существование файла
     if not os.path.exists(mobileconfig_path):
@@ -600,7 +597,7 @@ async def download_mobileconfig_macos(request: Request):
     
     return FileResponse(
         path=mobileconfig_path,
-        filename="BalticDNS-macOS.mobileconfig",
+        filename="uzicus-macos.mobileconfig",
         media_type="application/x-apple-aspen-config"
     )
 
@@ -610,7 +607,7 @@ async def download_mobileconfig_original(request: Request):
     client_ip = get_client_ip(request)
     logger.info(f"Original mobileconfig download requested from IP: {client_ip}")
     
-    mobileconfig_path = "/app/BalticDNS.mobileconfig"
+    mobileconfig_path = "/app/uzicus.mobileconfig"
     
     # Проверяем существование файла
     if not os.path.exists(mobileconfig_path):
@@ -619,7 +616,7 @@ async def download_mobileconfig_original(request: Request):
     
     return FileResponse(
         path=mobileconfig_path,
-        filename="BalticDNS-Original.mobileconfig",
+        filename="uzicus-original.mobileconfig",
         media_type="application/x-apple-aspen-config"
     )
 
