@@ -33,7 +33,7 @@ git clone <your-repo> baltic-dns && cd baltic-dns
                     └─────────────────┘
                              │
                     ┌─────────────────┐
-                    │ Baltic DNS      │
+                    │ Ninja DNS      │
                     │ (YOUR_DOMAIN)   │  
                     └─────────────────┘
                              │

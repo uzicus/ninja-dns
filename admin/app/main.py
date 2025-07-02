@@ -591,7 +591,7 @@ async def download_mobileconfig(request: Request):
         profile_content = generate_universal_profile(
             host_domain=HOST_DOMAIN,
             server_ip=SERVER_IP,
-            profile_name="Baltic DNS"
+            profile_name="Ninja DNS"
         )
         
         # Создаем Response с сгенерированным содержимым
@@ -619,7 +619,7 @@ async def download_mobileconfig_macos(request: Request):
         profile_content = generate_universal_profile(
             host_domain=HOST_DOMAIN,
             server_ip=SERVER_IP,
-            profile_name="Baltic DNS macOS"
+            profile_name="Ninja DNS macOS"
         )
         
         # Создаем Response с сгенерированным содержимым
@@ -647,7 +647,7 @@ async def download_mobileconfig_dot(request: Request):
         profile_content = generate_dot_profile(
             host_domain=HOST_DOMAIN,
             server_ip=SERVER_IP,
-            profile_name="Baltic DNS DoT"
+            profile_name="Ninja DNS DoT"
         )
         
         # Создаем Response с сгенерированным содержимым
@@ -675,7 +675,7 @@ async def download_uzicus_mobileconfig(request: Request):
         profile_content = generate_universal_profile(
             host_domain=HOST_DOMAIN,
             server_ip=SERVER_IP,
-            profile_name="Baltic DNS"
+            profile_name="Ninja DNS"
         )
         
         # Создаем Response с сгенерированным содержимым

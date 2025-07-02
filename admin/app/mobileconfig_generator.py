@@ -168,7 +168,7 @@ class MobileConfigGenerator:
         }
 
 
-def generate_universal_profile(host_domain: str, server_ip: str, profile_name: str = "Baltic DNS") -> str:
+def generate_universal_profile(host_domain: str, server_ip: str, profile_name: str = "Ninja DNS") -> str:
     """
     Генерирует универсальный профиль с поддержкой DoH (основной рабочий вариант)
     
@@ -184,7 +184,7 @@ def generate_universal_profile(host_domain: str, server_ip: str, profile_name: s
     return generator.generate_doh_profile(profile_name)
 
 
-def generate_dot_profile(host_domain: str, server_ip: str, profile_name: str = "Baltic DNS") -> str:
+def generate_dot_profile(host_domain: str, server_ip: str, profile_name: str = "Ninja DNS") -> str:
     """
     Генерирует профиль с поддержкой DoT
     

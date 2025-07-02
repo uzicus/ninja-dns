@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Реальные браузерные тесты для проверки DNS функциональности Baltic DNS
+Реальные браузерные тесты для проверки DNS функциональности Ninja DNS
 Проверяют как работает проверка DNS в реальном браузере
 """
 import asyncio
@@ -32,7 +32,7 @@ class DNSTestRunner:
                 self.original_hosts = ""
             
             # Записываем в временный файл оригинальное содержимое + наш домен
-            hosts_content = self.original_hosts + "\n# Baltic DNS test\n185.237.95.211 test.dns.uzicus.ru\n"
+            hosts_content = self.original_hosts + "\n# Ninja DNS test\n185.237.95.211 test.dns.uzicus.ru\n"
             self.temp_hosts_file.write(hosts_content)
             self.temp_hosts_file.close()
             
@@ -129,13 +129,13 @@ class TestDNSBrowserFunctionality:
             
             # Проверяем что страница загрузилась (не требует авторизации)
             title = await page.title()
-            assert "Baltic DNS" in title
+            assert "Ninja DNS" in title
             
             # Проверяем что есть элементы проверки DNS
             check_button = page.locator("button:has-text('Проверить подключение')")
             await check_button.wait_for(state="visible")
             
-            dns_title = page.locator("h1:has-text('Baltic DNS')")
+            dns_title = page.locator("h1:has-text('Ninja DNS')")
             await dns_title.wait_for(state="visible")
             
             print("✅ Страница DNS проверки загружается без авторизации")
@@ -207,7 +207,7 @@ class TestDNSBrowserFunctionality:
                 print("✅ DNS проверка корректно показала отсутствие подключения")
                 
                 # Проверяем что есть инструкции
-                instructions = page.locator("text=Как настроить Baltic DNS")
+                instructions = page.locator("text=Как настроить Ninja DNS")
                 if await instructions.count() > 0:
                     print("✅ Инструкции по настройке отображаются")
                     
@@ -315,8 +315,8 @@ async def test_full_integration():
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True, args=['--no-sandbox'])
             
-            # Тест 1: Эмуляция Baltic DNS (test.dns.uzicus.ru резолвится)
-            print("\n1️⃣ Тестируем с эмуляцией Baltic DNS...")
+            # Тест 1: Эмуляция Ninja DNS (test.dns.uzicus.ru резолвится)
+            print("\n1️⃣ Тестируем с эмуляцией Ninja DNS...")
             hosts_file = await dns_runner.setup_hosts_for_baltic_dns()
             
             page, context = await create_page_with_hosts(browser, hosts_file)
@@ -331,9 +331,9 @@ async def test_full_integration():
             
             success_indicator = page.locator("h3:has-text('✅ Подключен!')")
             if await success_indicator.count() > 0:
-                print("✅ С Baltic DNS показывается 'Подключен!'")
+                print("✅ С Ninja DNS показывается 'Подключен!'")
             else:
-                print("❌ С Baltic DNS НЕ показывается 'Подключен!'")
+                print("❌ С Ninja DNS НЕ показывается 'Подключен!'")
             
             await context.close()
             
@@ -363,7 +363,7 @@ async def test_full_integration():
 
 
 if __name__ == "__main__":
-    print("🧪 Baltic DNS - Браузерные тесты с Playwright")
+    print("🧪 Ninja DNS - Браузерные тесты с Playwright")
     print("=" * 50)
     
     # Запускаем интеграционный тест

@@ -1,5 +1,5 @@
 """
-Браузерные тесты для проверки функциональности DNS-проверки Baltic DNS
+Браузерные тесты для проверки функциональности DNS-проверки Ninja DNS
 """
 import asyncio
 import pytest
@@ -82,7 +82,7 @@ class TestDNSChecker:
             
             # Проверяем что страница загрузилась
             title = await page.title()
-            assert "Baltic DNS" in title
+            assert "Ninja DNS" in title
             
             # Проверяем что есть кнопка проверки
             check_button = page.locator("button:has-text('Проверить подключение')")
@@ -96,7 +96,7 @@ class TestDNSChecker:
     
     @pytest.mark.asyncio
     async def test_dns_check_with_baltic_dns(self, page: Page):
-        """Тест 2: Проверка DNS с настроенным Baltic DNS"""
+        """Тест 2: Проверка DNS с настроенным Ninja DNS"""
         dns_runner = DNSTestRunner()
         
         try:
@@ -122,7 +122,7 @@ class TestDNSChecker:
             success_indicator = page.locator("h3:has-text('✅ Подключен!')")
             
             if await success_indicator.count() > 0:
-                print("✅ DNS проверка показала успешное подключение к Baltic DNS")
+                print("✅ DNS проверка показала успешное подключение к Ninja DNS")
                 
                 # Проверяем детали
                 server_info = page.locator("span.font-mono.text-blue-400")
@@ -134,7 +134,7 @@ class TestDNSChecker:
                 # Проверяем есть ли ошибка
                 error_indicator = page.locator("h3:has-text('❌ Не подключен')")
                 if await error_indicator.count() > 0:
-                    print("❌ DNS проверка показала что Baltic DNS НЕ используется")
+                    print("❌ DNS проверка показала что Ninja DNS НЕ используется")
                     
                     # Получаем детали ошибки для отладки
                     error_details = page.locator(".text-red-400")
@@ -174,10 +174,10 @@ class TestDNSChecker:
             error_indicator = page.locator("h3:has-text('❌ Не подключен')")
             
             if await error_indicator.count() > 0:
-                print("✅ DNS проверка корректно показала что Baltic DNS НЕ используется")
+                print("✅ DNS проверка корректно показала что Ninja DNS НЕ используется")
                 
                 # Проверяем что есть инструкции по настройке
-                instructions = page.locator("text=Как настроить Baltic DNS")
+                instructions = page.locator("text=Как настроить Ninja DNS")
                 if await instructions.count() > 0:
                     print("✅ Инструкции по настройке отображаются")
                 
@@ -250,7 +250,7 @@ class TestDNSChecker:
             await asyncio.sleep(2)
             
             # Проверяем что интерфейс корректно отображается
-            title = page.locator("h1:has-text('Baltic DNS')")
+            title = page.locator("h1:has-text('Ninja DNS')")
             await title.wait_for(state="visible")
             
             print("✅ Интерфейс корректно отображается на разных разрешениях")
@@ -262,7 +262,7 @@ class TestDNSChecker:
 
 if __name__ == "__main__":
     """Запуск тестов напрямую"""
-    print("🧪 Запуск браузерных тестов для Baltic DNS")
+    print("🧪 Запуск браузерных тестов для Ninja DNS")
     print("=" * 50)
     
     # Устанавливаем Playwright браузеры если нужно

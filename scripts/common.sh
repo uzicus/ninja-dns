@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Common functions for Baltic DNS project scripts
+# Common functions for Ninja DNS project scripts
 # This file contains shared functions used across deployment, configuration, and diagnostic scripts
 
 # Color definitions

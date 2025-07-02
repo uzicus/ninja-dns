@@ -62,7 +62,7 @@ def test_main_page_loads():
         response = requests.get('https://dns.uzicus.ru/', timeout=10, verify=False)
         
         if response.status_code == 200:
-            if 'Baltic DNS' in response.text and 'checkDNS' in response.text:
+            if 'Ninja DNS' in response.text and 'checkDNS' in response.text:
                 print("✅ Главная страница загружается и содержит функцию проверки DNS")
                 return True
             else:
@@ -146,7 +146,7 @@ def test_services_running():
 
 def main():
     """Запуск всех тестов"""
-    print("🧪 Baltic DNS - Простые тесты функциональности")
+    print("🧪 Ninja DNS - Простые тесты функциональности")
     print("=" * 50)
     
     tests = [
