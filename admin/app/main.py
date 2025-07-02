@@ -11,6 +11,7 @@ import re
 import socket
 from typing import List, Dict, Any
 import logging
+from app.mobileconfig_generator import generate_universal_profile, generate_dot_profile, MobileConfigGenerator
 
 # Читаем переменные окружения
 HOST_DOMAIN = os.getenv('HOST_DOMAIN', 'dns.uzicus.ru')
@@ -561,26 +562,51 @@ async def download_page(request: Request):
     """Страница для скачивания mobileconfig профиля"""
     client_ip = get_client_ip(request)
     logger.info(f"Download page accessed from IP: {client_ip}")
-    return templates.TemplateResponse("download.html", {"request": request})
+    
+    # Получаем информацию о профиле для отображения
+    generator = MobileConfigGenerator(HOST_DOMAIN, SERVER_IP)
+    profile_info = generator.get_profile_info()
+    
+    return templates.TemplateResponse("download.html", {
+        "request": request,
+        "profile_info": profile_info,
+        "host_domain": HOST_DOMAIN,
+        "server_ip": SERVER_IP
+    })
+
+@app.get("/api/profile-info")
+async def get_profile_info():
+    """API для получения информации о DNS профиле"""
+    generator = MobileConfigGenerator(HOST_DOMAIN, SERVER_IP)
+    return generator.get_profile_info()
 
 @app.get("/download/mobileconfig")
 async def download_mobileconfig(request: Request):
-    """Скачивание исправленного файла mobileconfig для iOS/универсального"""
+    """Скачивание динамически сгенерированного mobileconfig для iOS/универсального"""
     client_ip = get_client_ip(request)
-    logger.info(f"Fixed mobileconfig download requested from IP: {client_ip}")
+    logger.info(f"Dynamic mobileconfig download requested from IP: {client_ip}")
     
-    mobileconfig_path = "/app/uzicus.mobileconfig"
-    
-    # Проверяем существование файла
-    if not os.path.exists(mobileconfig_path):
-        logger.error(f"Fixed mobileconfig file not found at {mobileconfig_path}")
-        raise HTTPException(status_code=404, detail="Configuration file not found")
-    
-    return FileResponse(
-        path=mobileconfig_path,
-        filename="uzicus.mobileconfig",
-        media_type="application/x-apple-aspen-config"
-    )
+    try:
+        # Генерируем профиль динамически
+        profile_content = generate_universal_profile(
+            host_domain=HOST_DOMAIN,
+            server_ip=SERVER_IP,
+            profile_name="Baltic DNS"
+        )
+        
+        # Создаем Response с сгенерированным содержимым
+        from fastapi.responses import Response
+        return Response(
+            content=profile_content,
+            media_type="application/x-apple-aspen-config",
+            headers={
+                "Content-Disposition": f"attachment; filename=baltic-dns.mobileconfig"
+            }
+        )
+        
+    except Exception as e:
+        logger.error(f"Error generating mobileconfig for IP {client_ip}: {e}")
+        raise HTTPException(status_code=500, detail="Error generating configuration file")
 
 @app.get("/download/mobileconfig-macos")
 async def download_mobileconfig_macos(request: Request):
@@ -588,56 +614,83 @@ async def download_mobileconfig_macos(request: Request):
     client_ip = get_client_ip(request)
     logger.info(f"macOS mobileconfig download requested from IP: {client_ip}")
     
-    mobileconfig_path = "/app/uzicus.mobileconfig"
-    
-    # Проверяем существование файла
-    if not os.path.exists(mobileconfig_path):
-        logger.error(f"macOS mobileconfig file not found at {mobileconfig_path}")
-        raise HTTPException(status_code=404, detail="Configuration file not found")
-    
-    return FileResponse(
-        path=mobileconfig_path,
-        filename="uzicus-macos.mobileconfig",
-        media_type="application/x-apple-aspen-config"
-    )
+    try:
+        # Генерируем профиль динамически (тот же универсальный)
+        profile_content = generate_universal_profile(
+            host_domain=HOST_DOMAIN,
+            server_ip=SERVER_IP,
+            profile_name="Baltic DNS macOS"
+        )
+        
+        # Создаем Response с сгенерированным содержимым
+        from fastapi.responses import Response
+        return Response(
+            content=profile_content,
+            media_type="application/x-apple-aspen-config",
+            headers={
+                "Content-Disposition": f"attachment; filename=baltic-dns-macos.mobileconfig"
+            }
+        )
+        
+    except Exception as e:
+        logger.error(f"Error generating macOS mobileconfig for IP {client_ip}: {e}")
+        raise HTTPException(status_code=500, detail="Error generating configuration file")
 
-@app.get("/download/mobileconfig-original")
-async def download_mobileconfig_original(request: Request):
-    """Скачивание оригинального файла mobileconfig (для отладки)"""
+@app.get("/download/mobileconfig-dot")
+async def download_mobileconfig_dot(request: Request):
+    """Скачивание файла mobileconfig с поддержкой DNS-over-TLS"""
     client_ip = get_client_ip(request)
-    logger.info(f"Original mobileconfig download requested from IP: {client_ip}")
+    logger.info(f"DoT mobileconfig download requested from IP: {client_ip}")
     
-    mobileconfig_path = "/app/uzicus.mobileconfig"
-    
-    # Проверяем существование файла
-    if not os.path.exists(mobileconfig_path):
-        logger.error(f"Original mobileconfig file not found at {mobileconfig_path}")
-        raise HTTPException(status_code=404, detail="Configuration file not found")
-    
-    return FileResponse(
-        path=mobileconfig_path,
-        filename="uzicus-original.mobileconfig",
-        media_type="application/x-apple-aspen-config"
-    )
+    try:
+        # Генерируем DoT профиль
+        profile_content = generate_dot_profile(
+            host_domain=HOST_DOMAIN,
+            server_ip=SERVER_IP,
+            profile_name="Baltic DNS DoT"
+        )
+        
+        # Создаем Response с сгенерированным содержимым
+        from fastapi.responses import Response
+        return Response(
+            content=profile_content,
+            media_type="application/x-apple-aspen-config",
+            headers={
+                "Content-Disposition": f"attachment; filename=baltic-dns-dot.mobileconfig"
+            }
+        )
+        
+    except Exception as e:
+        logger.error(f"Error generating DoT mobileconfig for IP {client_ip}: {e}")
+        raise HTTPException(status_code=500, detail="Error generating configuration file")
 
 @app.get("/download/uzicus")
 async def download_uzicus_mobileconfig(request: Request):
-    """Скачивание универсального файла uzicus.mobileconfig для всех устройств Apple"""
+    """Скачивание универсального файла mobileconfig для всех устройств Apple (главный эндпоинт)"""
     client_ip = get_client_ip(request)
-    logger.info(f"Uzicus mobileconfig download requested from IP: {client_ip}")
+    logger.info(f"Universal mobileconfig download requested from IP: {client_ip}")
     
-    mobileconfig_path = "/app/uzicus.mobileconfig"
-    
-    # Проверяем существование файла
-    if not os.path.exists(mobileconfig_path):
-        logger.error(f"Uzicus mobileconfig file not found at {mobileconfig_path}")
-        raise HTTPException(status_code=404, detail="Configuration file not found")
-    
-    return FileResponse(
-        path=mobileconfig_path,
-        filename="uzicus.mobileconfig",
-        media_type="application/x-apple-aspen-config"
-    )
+    try:
+        # Генерируем универсальный профиль (как uzicus.mobileconfig)
+        profile_content = generate_universal_profile(
+            host_domain=HOST_DOMAIN,
+            server_ip=SERVER_IP,
+            profile_name="Baltic DNS"
+        )
+        
+        # Создаем Response с сгенерированным содержимым
+        from fastapi.responses import Response
+        return Response(
+            content=profile_content,
+            media_type="application/x-apple-aspen-config",
+            headers={
+                "Content-Disposition": f"attachment; filename=baltic-dns.mobileconfig"
+            }
+        )
+        
+    except Exception as e:
+        logger.error(f"Error generating universal mobileconfig for IP {client_ip}: {e}")
+        raise HTTPException(status_code=500, detail="Error generating configuration file")
 
 if __name__ == "__main__":
     import uvicorn

@@ -11,7 +11,7 @@
     <div class="container mx-auto px-4 py-8 max-w-4xl">
         <!-- Header -->
         <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold mb-2">🛡️ Ninja DNS</h1>
+            <h1 class="text-4xl font-bold mb-2">🛡️ Baltic DNS</h1>
             <p class="text-gray-400">Защищенная DNS конфигурация для Apple устройств</p>
         </div>
 
@@ -19,15 +19,28 @@
         <div class="bg-gray-800 rounded-lg p-6 mb-8">
             <h2 class="text-2xl font-bold mb-4">📱 Скачать профиль конфигурации</h2>
             
-            <div class="bg-gray-700 rounded p-6 max-w-md mx-auto text-center">
-                <h3 class="text-xl font-semibold mb-2">🍎 Для всех устройств Apple</h3>
-                <p class="text-sm text-gray-300 mb-4">iPhone • iPad • Mac • Apple TV</p>
-                <p class="text-sm text-gray-400 mb-4">iOS 14+ • iPadOS 14+ • macOS 10.13+ • tvOS 14+</p>
-                <a href="/download/uzicus" 
-                   class="inline-block bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg text-white font-medium transition-colors text-lg mb-2">
-                    Скачать uzicus.mobileconfig
-                </a>
-                <p class="text-xs text-gray-400">Универсальный профиль с поддержкой DoH/DoT</p>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-gray-700 rounded p-6 text-center">
+                    <h3 class="text-xl font-semibold mb-2">🍎 Универсальный профиль</h3>
+                    <p class="text-sm text-gray-300 mb-4">iPhone • iPad • Mac • Apple TV</p>
+                    <p class="text-sm text-gray-400 mb-4">DNS-over-HTTPS (DoH)</p>
+                    <a href="/download/uzicus" 
+                       class="inline-block bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg text-white font-medium transition-colors text-lg mb-2">
+                        Скачать DoH профиль
+                    </a>
+                    <p class="text-xs text-gray-400">Рекомендуется для большинства устройств</p>
+                </div>
+                
+                <div class="bg-gray-700 rounded p-6 text-center">
+                    <h3 class="text-xl font-semibold mb-2">🔒 DNS-over-TLS профиль</h3>
+                    <p class="text-sm text-gray-300 mb-4">iPhone • iPad • Mac</p>
+                    <p class="text-sm text-gray-400 mb-4">DNS-over-TLS (DoT)</p>
+                    <a href="/download/mobileconfig-dot" 
+                       class="inline-block bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg text-white font-medium transition-colors text-lg mb-2">
+                        Скачать DoT профиль
+                    </a>
+                    <p class="text-xs text-gray-400">Альтернативный протокол для экспертов</p>
+                </div>
             </div>
         </div>
 
@@ -92,17 +105,17 @@
             <div class="space-y-3">
                 <div class="flex justify-between items-center">
                     <span class="font-medium">DoH (HTTPS):</span>
-                    <code class="bg-gray-700 px-2 py-1 rounded text-sm">https://dns.uzicus.ru/dns-query</code>
+                    <code class="bg-gray-700 px-2 py-1 rounded text-sm">https://{{ host_domain }}/dns-query</code>
                 </div>
                 
                 <div class="flex justify-between items-center">
                     <span class="font-medium">DoT (TLS):</span>
-                    <code class="bg-gray-700 px-2 py-1 rounded text-sm">dns.uzicus.ru:853</code>
+                    <code class="bg-gray-700 px-2 py-1 rounded text-sm">{{ host_domain }}:853</code>
                 </div>
                 
                 <div class="flex justify-between items-center">
                     <span class="font-medium">Обычный DNS:</span>
-                    <code class="bg-gray-700 px-2 py-1 rounded text-sm">185.237.95.211</code>
+                    <code class="bg-gray-700 px-2 py-1 rounded text-sm">{{ server_ip }}</code>
                 </div>
                 
                 <div class="flex justify-between items-center">
@@ -123,12 +136,12 @@
                        class="inline-block bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white font-medium transition-colors">
                         Открыть тест DNS
                     </a>
-                    <p class="text-sm text-gray-400 mt-2">DNS резолвер должен показать: 185.237.95.211</p>
+                    <p class="text-sm text-gray-400 mt-2">DNS резолвер должен показать: {{ server_ip }}</p>
                 </div>
                 
                 <div>
                     <h3 class="font-semibold mb-2">Проверить DoH:</h3>
-                    <a href="https://dns.uzicus.ru/dns-query?name=google.com&type=A" target="_blank"
+                    <a href="https://{{ host_domain }}/dns-query?name=google.com&type=A" target="_blank"
                        class="inline-block bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white font-medium transition-colors">
                         Тест DoH запроса
                     </a>
@@ -138,7 +151,7 @@
 
         <!-- Footer -->
         <div class="text-center text-gray-500 text-sm">
-            <p>Ninja DNS v2.2 • <a href="/" class="text-blue-400 hover:text-blue-300">Вернуться к админке</a></p>
+            <p>Baltic DNS v3.0 • <a href="/" class="text-blue-400 hover:text-blue-300">Вернуться к админке</a></p>
         </div>
     </div>
 </body>
